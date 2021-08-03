@@ -42,7 +42,7 @@ public typealias AddChildViewControllerBlock = (Int, UIViewController) -> Void
     @objc func customLayoutItems(handle: (([LTPageTitleItemView], LTPageView) -> Void)?)
 }
 
-public class LTPageView: UIView, LTPageViewHeaders {
+public class LTPageView: UIView, LTPageViewHeaders{
     
     //当前的控制器
     private weak var currentViewController: UIViewController?
@@ -57,7 +57,7 @@ public class LTPageView: UIView, LTPageViewHeaders {
     private var layout: LTLayout
     
     //当前选中的位置
-    private var glt_currentIndex: Int = 0;
+    private var glt_currentIndex: Int = 0
     
     //选中了第几个位置
     @objc public var didSelectIndexBlock: PageViewDidSelectIndexBlock?
@@ -86,8 +86,8 @@ public class LTPageView: UIView, LTPageViewHeaders {
         return titleView
     }()
     
-    private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView(frame: CGRect(x: 0, y: 0, width: glt_width, height: glt_height))
+    private lazy var scrollView: LTScrollView = {
+        let scrollView = LTScrollView(frame: CGRect(x: 0, y: 0, width: glt_width, height: glt_height))
         scrollView.contentSize = CGSize(width: glt_width * CGFloat(self.titles.count), height: 0)
         scrollView.isPagingEnabled = true
         scrollView.delegate = self
@@ -99,6 +99,7 @@ public class LTPageView: UIView, LTPageViewHeaders {
         }
         return scrollView
     }()
+    
     
     @objc required public init(frame: CGRect, currentViewController: UIViewController, viewControllers:[UIViewController], titles: [String], layout: LTLayout) {
         self.currentViewController = currentViewController
@@ -216,7 +217,7 @@ extension LTPageView {
     }
     
     //获取当前位置
-    private func currentIndex() -> Int {
+    public func currentIndex() -> Int {
         if scrollView.bounds.width == 0 || scrollView.bounds.height == 0 {
             return 0
         }
@@ -254,3 +255,20 @@ extension LTPageView: UIScrollViewDelegate {
 }
 
 
+class LTScrollView: UIScrollView,UIGestureRecognizerDelegate {
+    
+    var canInteractivePop:Bool{
+        get {
+            guard let pageView:LTPageView = self.superview as? LTPageView  else {return false}
+            return (pageView.currentIndex() == 0)
+        }
+    }
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        return true
+    }
+    
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+        return canInteractivePop
+    }
+}
