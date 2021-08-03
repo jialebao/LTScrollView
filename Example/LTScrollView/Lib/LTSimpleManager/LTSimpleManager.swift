@@ -88,6 +88,7 @@
         tableView.dataSource = self
         tableView.showsVerticalScrollIndicator = false
         tableView.separatorStyle = .none
+        tableView.backgroundColor = UIColor.clear
         registerCell(tableView, UITableViewCell.self)
         return tableView
     }()
